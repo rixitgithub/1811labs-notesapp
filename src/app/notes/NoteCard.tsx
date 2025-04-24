@@ -45,7 +45,7 @@ export default function NoteCard({
           'relative bg-card rounded-xl rounded-tr-none p-6 border border-border shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer',
           'bg-gradient-to-br from-primary/10 to-secondary/10 overflow-visible flex flex-col',
           isNew && 'animate-pulse border-2 border-primary',
-          'w-full max-w-sm mx-auto'
+          'w-full max-w-sm mx-auto max-h-[90vh]'
         )}
         onClick={handleCardClick}
       >
@@ -77,7 +77,7 @@ export default function NoteCard({
           </p>
         </CardHeader>
         <hr className="border-t border-border w-full mt-[-10px]" />
-        <CardContent className="px-0 pb-0 flex flex-col flex-grow">
+        <CardContent className="px-0 pb-0 flex flex-col flex-grow overflow-y-auto">
           <p className="text-base text-foreground mb-4 line-clamp-3 leading-relaxed">
             {note.content}
           </p>
@@ -117,7 +117,7 @@ export default function NoteCard({
         <DialogContent
           className={cn(
             'sm:max-w-md bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-all',
-            'animate-in fade-in-90 duration-300'
+            'animate-in fade-in-90 duration-300 max-h-[90vh] flex flex-col'
           )}
         >
           <DialogHeader>
@@ -125,7 +125,7 @@ export default function NoteCard({
               {note.title}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 flex-grow overflow-y-auto">
             {category && (
               <div className="flex items-center gap-2">
                 <span
