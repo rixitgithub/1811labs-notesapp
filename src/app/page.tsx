@@ -10,15 +10,15 @@ import { LogIn } from 'lucide-react';
 export default function Home() {
   const supabase = createClient();
   const router = useRouter();
-  const [isSignUp, setIsSignUp] = useState(false); // Toggle sign-in/sign-up
+  const [isSignUp, setIsSignUp] = useState(false); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // For sign-up
+  const [confirmPassword, setConfirmPassword] = useState(''); 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect authenticated users to /notes
+  
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -27,7 +27,7 @@ export default function Home() {
     checkUser();
   }, [router, supabase]);
 
-  // Handle Google OAuth sign-in (works for both sign-in and sign-up)
+  
   const handleGoogleLogin = async () => {
     setError(null);
     setSuccess(null);
@@ -42,7 +42,7 @@ export default function Home() {
     }
   };
 
-  // Handle email/password sign-in or sign-up
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -56,7 +56,7 @@ export default function Home() {
     }
 
     if (isSignUp) {
-      // Sign-up mode
+      
       if (password !== confirmPassword) {
         setError('Passwords do not match');
         setIsLoading(false);

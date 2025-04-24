@@ -2,13 +2,14 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js'; // Add this import at the top of the file
 import ThemeToggle from './ThemeToggle';
 import Image from 'next/image';
 
 export default function Header() {
   const supabase = createClient();
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -70,9 +71,8 @@ export default function Header() {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  // Determine if user signed in with email
-  const isEmailSignIn = user?.identities?.some((identity: any) => identity.provider === 'email');
-
+  
+  const isEmailSignIn = user?.identities?.some((identity) => identity.provider === 'email');
   return (
     <header className="flex justify-between items-center mb-6">
       <h1 className="text-2xl font-bold">Notes Summarizer - Intern Assignment</h1>

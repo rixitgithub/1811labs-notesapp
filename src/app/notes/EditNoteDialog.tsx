@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Category } from './page';
 import { cn } from '@/lib/utils';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { useTheme } from 'next-themes';
 
 interface EditNoteDialogProps {
   open: boolean;
@@ -45,6 +46,29 @@ export default function EditNoteDialog({
   const genAI = googleApiKey ? new GoogleGenerativeAI(googleApiKey) : null;
   const model = genAI ? genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }) : null;
   const [isLoading, setIsLoading] = useState(false);
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Sync theme with localStorage and debug
+  useEffect(() => {
+    setMounted(true);
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme && storedTheme !== theme) {
+      setTheme(storedTheme); // Sync theme with localStorage
+    }
+    console.log('EditNoteDialog mounted, theme:', theme, 'resolvedTheme:', resolvedTheme);
+    console.log('HTML classes:', document.documentElement.classList.toString());
+    console.log('Stored theme:', storedTheme);
+    // Debug computed styles
+    const dialog = document.querySelector('.bg-white.dark\\:bg-gray-900');
+    const input = document.querySelector('input.bg-white.dark\\:bg-gray-900');
+    const title = document.querySelector('.text-gray-900.dark\\:text-gray-100');
+    const label = document.querySelector('.text-gray-700.dark\\:text-gray-200');
+    console.log('Dialog computed background:', dialog ? getComputedStyle(dialog).backgroundColor : 'not found');
+    console.log('Input computed background:', input ? getComputedStyle(input).backgroundColor : 'not found');
+    console.log('Title computed color:', title ? getComputedStyle(title).color : 'not found');
+    console.log('Label computed color:', label ? getComputedStyle(label).color : 'not found');
+  }, [theme, resolvedTheme, setTheme]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +92,7 @@ export default function EditNoteDialog({
       const generatedSummary = result.response.text();
       console.log('Generated Summary:', generatedSummary);
       onSubmit(generatedSummary);
-    } catch (err) {
+    } catch {
       setError('Failed to generate summary');
     } finally {
       setIsLoading(false);
@@ -77,27 +101,50 @@ export default function EditNoteDialog({
 
   const getColorStyle = (color: string) => {
     if (color.startsWith('#')) {
-      return { backgroundColor: color };
+      return { className: '', style: { backgroundColor: color } };
     }
-    return { backgroundColor: `rgb(var(--${color}))` };
+    const colorMap: { [key: string]: string } = {
+      red: 'bg-red-500 dark:bg-red-600',
+      blue: 'bg-blue-500 dark:bg-blue-600',
+      green: 'bg-green-500 dark:bg-green-600',
+      yellow: 'bg-yellow-500 dark:bg-yellow-600',
+    };
+    return { className: colorMap[color.toLowerCase()] || 'bg-gray-500 dark:bg-gray-600', style: {} };
   };
 
+  if (!mounted) {
+    return null; // Prevent rendering until theme is applied
+  }
+
   return (
-    <Dialog open={open} onOpenChange={(open) => { onOpenChange(open); if (!open) setError(null); }}>
+    <Dialog open={open} onOpenChange={(open) => {
+      onOpenChange(open);
+      if (!open) {
+        setError(null);
+        setTitle('');
+        setContent('');
+        setCategoryId(null);
+      }
+    }}>
       <DialogContent
         className={cn(
-          'sm:max-w-md bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-all',
+          'sm:max-w-md bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg transition-all',
           'animate-in fade-in-90 duration-300'
         )}
+        style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
+        aria-describedby="dialog-description"
       >
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <DialogTitle className="text-xl font-semibold ">
             Edit Note
           </DialogTitle>
+          <div id="dialog-description" className="sr-only">
+            Form to edit a note with title, category, and content fields.
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Label htmlFor="title" className="text-sm font-medium">
               Title
             </Label>
             <Input
@@ -106,43 +153,50 @@ export default function EditNoteDialog({
               onChange={(e) => setTitle(e.target.value)}
               required
               placeholder="Enter note title"
-              className="w-full border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+              className="w-full border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+              style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Label htmlFor="category" className="text-sm font-medium">
               Category
             </Label>
             <Select
               value={categoryId || 'none'}
               onValueChange={(value) => setCategoryId(value === 'none' ? null : value)}
             >
-              <SelectTrigger className="w-full border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">
+              <SelectTrigger
+                className="w-full border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
+              >
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-md">
-                <SelectItem value="none" className="text-gray-700 dark:text-gray-200">
+              <SelectContent
+                className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 shadow-md"
+                style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
+              >
+                <SelectItem value="none" className="text-gray-900 dark:text-gray-100">
                   No Category
                 </SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id} className="text-gray-700 dark:text-gray-200">
-                    <div className="flex items-center">
-                      <span
-                        className="inline-block w-3 h-3 mr-2 rounded-full"
-                        style={getColorStyle(cat.color)}
-                      ></span>
-                      {cat.name}
-                    </div>
-                  </SelectItem>
-                ))}
+                {categories.map((cat) => {
+                  const { className, style } = getColorStyle(cat.color);
+                  return (
+                    <SelectItem key={cat.id} value={cat.id} className="text-gray-900 dark:text-gray-100">
+                      <div className="flex items-center">
+                        <span
+                          className={cn('inline-block w-3 h-3 mr-2 rounded-full', className)}
+                          style={style}
+                        ></span>
+                        {cat.name}
+                      </div>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <Label
-              htmlFor="content"
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 text-right block"
-            >
+            <Label htmlFor="content" className="text-sm font-medium">
               Content
             </Label>
             <Textarea
@@ -152,19 +206,12 @@ export default function EditNoteDialog({
               rows={5}
               required
               placeholder="Enter note content"
-              className="w-full h-32 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+              className="w-full h-32 overflow-y-auto border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+              style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
             />
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-500 dark:text-red-300 text-sm">{error}</p>}
           <DialogFooter className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="border-gray-200 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              Cancel
-            </Button>
             <Button
               type="submit"
               disabled={isLoading || isPending}

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Sun, Moon } from 'lucide-react';
 
 export default function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme, mounted } = useThemeWithStorage();
+  const {  setTheme, resolvedTheme, mounted } = useThemeWithStorage();
 
   if (!mounted) return null;
 

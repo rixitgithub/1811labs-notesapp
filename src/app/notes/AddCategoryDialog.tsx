@@ -1,10 +1,11 @@
 'use client';
-
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils'; // Shadcn/UI utility for conditional class names
+import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 interface AddCategoryDialogProps {
   open: boolean;
@@ -31,28 +32,68 @@ export default function AddCategoryDialog({
   error,
   setError,
 }: AddCategoryDialogProps) {
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Sync theme with localStorage and debug
+  useEffect(() => {
+    setMounted(true);
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme && storedTheme !== theme) {
+      setTheme(storedTheme); // Sync theme with localStorage
+    }
+    console.log('AddCategoryDialog mounted, theme:', theme, 'resolvedTheme:', resolvedTheme);
+    console.log('HTML classes:', document.documentElement.classList.toString());
+    console.log('Stored theme:', storedTheme);
+    // Debug computed styles
+    const dialog = document.querySelector('.bg-white.dark\\:bg-gray-900');
+    const input = document.querySelector('input.bg-white.dark\\:bg-gray-900');
+    const title = document.querySelector('.text-gray-900.dark\\:text-gray-100');
+    const label = document.querySelector('.text-gray-700.dark\\:text-gray-200');
+    console.log('Dialog computed background:', dialog ? getComputedStyle(dialog).backgroundColor : 'not found');
+    console.log('Input computed background:', input ? getComputedStyle(input).backgroundColor : 'not found');
+    console.log('Title computed color:', title ? getComputedStyle(title).color : 'not found');
+    console.log('Label computed color:', label ? getComputedStyle(label).color : 'not found');
+  }, [theme, resolvedTheme, setTheme]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     onSubmit();
   };
 
+  if (!mounted) {
+    return null; // Prevent rendering until theme is applied
+  }
+
   return (
-    <Dialog open={open} onOpenChange={(open) => { onOpenChange(open); if (!open) setError(null); }}>
+    <Dialog open={open} onOpenChange={(open) => {
+      onOpenChange(open);
+      if (!open) {
+        setError(null);
+        setNewCategoryName('');
+        setNewCategoryColor('');
+      }
+    }}>
       <DialogContent
         className={cn(
-          'sm:max-w-md bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-all',
-          'animate-in fade-in-90 duration-300' // Smooth fade-in animation
+          'sm:max-w-md bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg transition-all',
+          'animate-in fade-in-90 duration-300'
         )}
+        style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
+        aria-describedby="dialog-description"
       >
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <DialogTitle className="text-xl font-semibold">
             Add New Category
           </DialogTitle>
+          <div id="dialog-description" className="sr-only">
+            Form to add a new category with name and color fields.
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="categoryName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Label htmlFor="categoryName" className="text-sm font-medium">
               Category Name
             </Label>
             <Input
@@ -61,11 +102,12 @@ export default function AddCategoryDialog({
               onChange={(e) => setNewCategoryName(e.target.value)}
               required
               placeholder="Enter category name"
-              className="w-full border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+              className="w-full border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+              style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="categoryColor" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Label htmlFor="categoryColor" className="text-sm font-medium">
               Color
             </Label>
             <div className="flex items-center space-x-2">
@@ -74,7 +116,8 @@ export default function AddCategoryDialog({
                 id="categoryColor"
                 value={newCategoryColor}
                 onChange={(e) => setNewCategoryColor(e.target.value)}
-                className="w-12 h-10 p-1 border border-gray-200 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 cursor-pointer"
+                className="w-12 h-10 p-1 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 rounded-md cursor-pointer"
+                style={{ backgroundColor: resolvedTheme === 'dark' ? '#111827' : '#ffffff' }}
               />
               <span
                 className="w-10 h-10 rounded-md border border-gray-200 dark:border-gray-600"
@@ -82,16 +125,8 @@ export default function AddCategoryDialog({
               ></span>
             </div>
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-500 dark:text-red-300 text-sm">{error}</p>}
           <DialogFooter className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="border-gray-200 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              Cancel
-            </Button>
             <Button
               type="submit"
               disabled={isPending}

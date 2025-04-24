@@ -16,27 +16,6 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-        <link id="favicon" rel="icon" href="/icon-dark.png" type="image/png" sizes="192x192" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                function updateFavicon() {
-                  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  const favicon = document.getElementById('favicon');
-                  if (favicon) {
-                    favicon.href = isDarkMode ? '/icon-light.png' : '/icon-dark.png';
-                  }
-                }
-                updateFavicon();
-                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFavicon);
-              })();
-            `,
-          }}
-        />
-      </head>
       <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
         <Providers>
           <ThemeHeader />
