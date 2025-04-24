@@ -7,9 +7,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
-    console.log('ThemeProvider mounted, class:', document.documentElement.classList.toString());
-    // Log theme from localStorage
-    console.log('Stored theme:', localStorage.getItem('theme'));
   }, []);
 
   return (

@@ -10,15 +10,24 @@ import { LogIn } from 'lucide-react';
 export default function Home() {
   const supabase = createClient();
   const router = useRouter();
-  const [isSignUp, setIsSignUp] = useState(false); 
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); 
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  
+  const getURL = () => {
+    let url =
+      process.env.NEXT_PUBLIC_SITE_URL ?? // Production URL
+      process.env.VERCEL_URL ?? // Vercel preview URL
+      'http://localhost:3000/'; // Local development
+    url = url.startsWith('http') ? url : `https://${url}`;
+    url = url.endsWith('/') ? url : `${url}/`;
+    return url;
+  };
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -27,14 +36,13 @@ export default function Home() {
     checkUser();
   }, [router, supabase]);
 
-  
   const handleGoogleLogin = async () => {
     setError(null);
     setSuccess(null);
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${getURL()}auth/callback` },
     });
     if (error) {
       setError('Failed to sign in with Google: ' + error.message);
@@ -42,7 +50,6 @@ export default function Home() {
     }
   };
 
-  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -56,7 +63,6 @@ export default function Home() {
     }
 
     if (isSignUp) {
-      
       if (password !== confirmPassword) {
         setError('Passwords do not match');
         setIsLoading(false);
@@ -67,7 +73,7 @@ export default function Home() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${getURL()}auth/callback`,
         },
       });
 
@@ -77,7 +83,6 @@ export default function Home() {
       } else {
         setSuccess('Account created! Check your email for a confirmation link.');
         setIsLoading(false);
-        // If email confirmation is disabled, attempt auto-sign-in
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -87,7 +92,6 @@ export default function Home() {
         }
       }
     } else {
-      // Sign-in mode
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -102,7 +106,6 @@ export default function Home() {
     }
   };
 
-  // Toggle between sign-in and sign-up
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
     setError(null);
@@ -116,13 +119,11 @@ export default function Home() {
     <div className="flex items-center justify-center">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
         <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-2">
-          AI Notes App
+          Notes Summarizer - 1811 Labs
         </h1>
         <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
           Summarize and organize your notes with AI
         </p>
-
-        {/* Google Sign-In Button */}
         <Button
           onClick={handleGoogleLogin}
           disabled={isLoading}
@@ -136,8 +137,6 @@ export default function Home() {
           </svg>
           Sign {isSignUp ? 'up' : 'in'} with Google
         </Button>
-
-        {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
@@ -148,8 +147,6 @@ export default function Home() {
             </span>
           </div>
         </div>
-
-        {/* Email/Password Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -200,14 +197,12 @@ export default function Home() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white cursor-pointer" 
+            className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white cursor-pointer"
           >
             <LogIn className="w-4 h-4 mr-2" />
             {isSignUp ? 'Sign Up' : 'Sign In'}
           </Button>
         </form>
-
-        {/* Toggle Sign-In/Sign-Up */}
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
           {isSignUp ? 'Already have an account?' : 'Need an account?'}{' '}
           <button

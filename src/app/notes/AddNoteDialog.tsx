@@ -56,18 +56,6 @@ export default function AddNoteDialog({
     if (storedTheme && storedTheme !== theme) {
       setTheme(storedTheme); // Sync theme with localStorage
     }
-    console.log('AddNoteDialog mounted, theme:', theme, 'resolvedTheme:', resolvedTheme);
-    console.log('HTML classes:', document.documentElement.classList.toString());
-    console.log('Stored theme:', storedTheme);
-    // Debug computed styles
-    const dialog = document.querySelector('.bg-white.dark\\:bg-gray-900');
-    const input = document.querySelector('input.bg-white.dark\\:bg-gray-900');
-    const title = document.querySelector('.text-gray-900.dark\\:text-gray-100');
-    const label = document.querySelector('.text-gray-700.dark\\:text-gray-200');
-    console.log('Dialog computed background:', dialog ? getComputedStyle(dialog).backgroundColor : 'not found');
-    console.log('Input computed background:', input ? getComputedStyle(input).backgroundColor : 'not found');
-    console.log('Title computed color:', title ? getComputedStyle(title).color : 'not found');
-    console.log('Label computed color:', label ? getComputedStyle(label).color : 'not found');
   }, [theme, resolvedTheme, setTheme]);
 
   const handleSubmit = async (e: React.FormEvent) => {

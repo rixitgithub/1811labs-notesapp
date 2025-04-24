@@ -57,7 +57,7 @@ export default function NoteCard({
             aria-label={`Category: ${category.name}`}
           />
         )}
-        <CardHeader className="px-0 relative">
+        <CardHeader className="px-0 relative flex flex-col gap-2">
           <div>
             <CardTitle className="text-2xl font-bold text-accent-foreground tracking-tight">
               {note.title}
@@ -72,7 +72,7 @@ export default function NoteCard({
               </div>
             )}
           </div>
-          <p className="absolute bottom-0 right-0 text-xs text-muted-foreground pr-2 pb-2 z-10">
+          <p className="text-xs text-muted-foreground">
             Created: {createdAt}
           </p>
         </CardHeader>
