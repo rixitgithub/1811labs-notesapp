@@ -1,18 +1,19 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400&display=swap');
 
 body {
-  background-color: #FFF8F0; /* Custom color for cream-50 */
+  background-color: #FFF8F0;
+  font-family: 'Martian Mono', monospace;
   @apply text-indigo-800 min-h-screen;
 }
 
 .dark body {
-  background-color: #1A1C2B; /* Custom color for slate-950 */
-  color: #F8F9FA; /* Custom color for ivory-50 */
+  background-color: #1A1C2B;
+  color: #F8F9FA;
 }
 
-/* Shadcn UI variables */
 :root {
-  --card: 0 0% 100%; /* White for light mode */
+  --card: 0 0% 98%;
   --card-foreground: 222.2 47.4% 11.2%;
   --primary: 222.2 47.4% 11.2%;
   --primary-foreground: 210 40% 98%;
@@ -30,7 +31,7 @@ body {
 }
 
 .dark {
-  --card: 224 71% 4%; /* Dark shade for dark mode */
+  --card: 220 40% 10%;
   --card-foreground: 213 31% 91%;
   --primary: 210 40% 98%;
   --primary-foreground: 222.2 47.4% 11.2%;
@@ -47,9 +48,8 @@ body {
   --ring: 210 40% 98%;
 }
 
-/* Card styles */
 .card {
-  background-color: hsl(var(--card)); /* Use --card variable for contrast */
+  background-color: hsl(var(--card));
   color: hsl(var(--card-foreground));
   @apply rounded-lg p-4 shadow-sm;
 }
@@ -59,7 +59,6 @@ body {
   color: hsl(var(--card-foreground));
 }
 
-/* Dialog styles */
 [data-radix-dialog-overlay] {
   @apply bg-black/40 fixed inset-0 z-50 transition-opacity duration-200;
 }
@@ -69,9 +68,9 @@ body {
 }
 
 .dialog-content {
-  background-color: #FFF8F0; /* Custom color for cream-50 */
-  color: #1E1B4B; /* Tailwind's indigo-800 */
-  border: 1px solid #FECDD6; /* Custom color for pastel-pink */
+  background-color: #FFF8F0;
+  color: #1E1B4B;
+  border: 1px solid #FECDD6;
   @apply rounded-xl p-6 max-w-full;
   width: 400px;
   z-index: 60;
@@ -83,9 +82,9 @@ body {
 }
 
 .dark .dialog-content {
-  background-color: #1A1C2B; /* Custom color for slate-950 */
-  color: #F8F9FA; /* Custom color for ivory-50 */
-  border-color: #66FCF1; /* Custom color for neon-cyan */
+  background-color: #1A1C2B;
+  color: #F8F9FA;
+  border-color: #66FCF1;
 }
 
 .dialog-content:focus {
@@ -116,13 +115,12 @@ body {
   @apply ring-gray-500;
 }
 
-/* Input, Textarea, and Select styles */
 input,
 textarea,
 select {
-  background-color: #FFFFFF; /* Tailwind's white */
-  border: 1px solid #FECDD6; /* Custom color for pastel-pink */
-  color: #1E1B4B; /* Tailwind's indigo-800 */
+  background-color: #FFFFFF;
+  border: 1px solid #FECDD6;
+  color: #1E1B4B;
   @apply rounded-lg p-3 transition-all duration-200 shadow-sm;
 }
 
@@ -135,13 +133,13 @@ select {
 input::placeholder,
 textarea::placeholder,
 select::placeholder {
-  color: #6B21A8; /* Custom color for purple-600 */
+  color: #6B21A8;
 }
 
 .dark input::placeholder,
 .dark textarea::placeholder,
 .dark select::placeholder {
-  @apply text-gray-400; /* Match button text for consistency */
+  @apply text-gray-400;
 }
 
 input:focus,
@@ -156,7 +154,6 @@ select:focus {
   @apply ring-gray-500 border-gray-500;
 }
 
-/* Button styles */
 button {
   @apply bg-gray-200 text-gray-800 border border-gray-300 rounded-md px-4 py-2 text-sm transition-colors;
 }
@@ -185,16 +182,14 @@ button:disabled {
   @apply opacity-50 cursor-not-allowed;
 }
 
-/* Error text */
 .error-text {
   @apply text-red-500 text-sm;
 }
 
 .dark .error-text {
-  color: #FF2E63; /* Custom neon-pink */
+  color: #FF2E63;
 }
 
-/* Animations */
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -204,7 +199,6 @@ button:disabled {
   }
 }
 
-/* Force overrides for consistency */
 .dark .dark\:bg-slate-950 {
   background-color: #1A1C2B !important;
 }
