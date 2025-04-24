@@ -118,9 +118,18 @@ export default function Home() {
   return (
     <div className="flex items-center justify-center">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-2">
-          Notes Summarizer - 1811 Labs
-        </h1>
+      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-2">
+  Notes Summarizer - 1811 Labs by{" "}
+  <a
+    href="https://rishittiwari.vercel.app"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-blue-600 hover:underline"
+  >
+    Rishit Tiwari
+  </a>
+</h1>
+
         <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
           Summarize and organize your notes with AI
         </p>
