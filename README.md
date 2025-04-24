@@ -27,7 +27,7 @@ A smart note-taking app with AI-powered summarization, built for 1811 Labs using
 <table>
   <tr>
     <td width="50%">
-      <img src="ss/dash-light.png" alt="Notes Dashboard"/>
+      <img src="ss/dash-dark.png" alt="Notes Dashboard"/>
       <p align="center"><em>Dashboard: Overview of all notes with filtering options</em></p>
     </td>
     <td width="50%">
