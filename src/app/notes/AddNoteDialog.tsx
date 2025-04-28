@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Category } from './page';
 import { cn } from '@/lib/utils';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useTheme } from 'next-themes';
 
 interface AddNoteDialogProps {
@@ -42,9 +41,6 @@ export default function AddNoteDialog({
   error,
   setError,
 }: AddNoteDialogProps) {
-  const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
-  const genAI = googleApiKey ? new GoogleGenerativeAI(googleApiKey) : null;
-  const model = genAI ? genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }) : null;
   const [isLoading, setIsLoading] = useState(false);
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -62,30 +58,29 @@ export default function AddNoteDialog({
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
-    if (!model) {
-      setError('Summarization unavailable: Google API key is missing');
-      setIsLoading(false);
-      return;
-    }
+  
     if (!content.trim()) {
       setError('Content is required');
       setIsLoading(false);
       return;
     }
-
+  
     try {
-      const prompt = `Summarize the following text in 2-3 sentences:\n\n${content}`;
-      const result = await model.generateContent(prompt);
-      const generatedSummary = result.response.text();
-      console.log('Generated Summary:', generatedSummary);
-      onSubmit(generatedSummary);
-    } catch {
+      const res = await fetch('/api/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      onSubmit(data.summary);
+    } catch  {
       setError('Failed to generate summary');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const getColorStyle = (color: string) => {
     if (color.startsWith('#')) {
