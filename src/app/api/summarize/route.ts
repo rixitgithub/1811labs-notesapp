@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+
+//api instead of frontend
 export async function POST(request: NextRequest) {
   const { content } = await request.json();
 
